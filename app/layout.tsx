@@ -42,8 +42,8 @@ export default function RootLayout({
           noiseAmount={0}
           distortion={0.01}
           pulsating={false}
-          fadeDistance={1}
-          saturation={1}
+          // fadeDistance={1}
+          // saturation={1}
           /> 
         </div>
 
