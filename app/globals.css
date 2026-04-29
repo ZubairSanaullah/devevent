@@ -130,6 +130,11 @@
   ul {
     @apply list-disc list-inside;
   }
+
+  li{
+    @apply list-none;
+  }
+
 }
 
 @layer components {
