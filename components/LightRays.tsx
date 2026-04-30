@@ -95,10 +95,16 @@ const LightRays: React.FC<LightRaysProps> = ({
   const meshRef = useRef<any>(null);
   const cleanupFunctionRef = useRef<(() => void) | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
+  // Ensure component only renders after hydration
   useEffect(() => {
-    if (!containerRef.current) return;
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || !containerRef.current) return;
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
@@ -116,10 +122,10 @@ const LightRays: React.FC<LightRaysProps> = ({
         observerRef.current = null;
       }
     };
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
-    if (!isVisible || !containerRef.current) return;
+    if (!isMounted || !isVisible || !containerRef.current) return;
 
     if (cleanupFunctionRef.current) {
       cleanupFunctionRef.current();
@@ -446,6 +452,7 @@ void main() {
     <div
       ref={containerRef}
       className={`pointer-events-none relative z-[3] h-full w-full overflow-hidden ${className}`.trim()}
+      suppressHydrationWarning
     />
   );
 };
