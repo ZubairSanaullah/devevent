@@ -3,6 +3,7 @@ import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database/event.model";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import { get } from "http";
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -37,11 +38,15 @@ const EventTags = ({tags}: {tags: string[]}) => (
 )
 
 const EventDetailsPage = async({params}: {params: Promise<{ slug: string } >}) => {
+  'use cache';
+  cacheLife('hours');
   const {slug} = await params;
   const request = await fetch(`${BASE_URL}/api/events/${slug}`);
-  const {event: {description, image, overview, date, time, location, mode, agenda, audience, tags, organizer}} = await request.json();
+  const {event} = await request.json();
 
-  if(!description) return notFound();
+  if(!event || !event.description) return notFound();
+
+  const {description, image, overview, date, time, location, mode, agenda, audience, tags, organizer} = event;
 
   const bookings = 10;
 
@@ -97,12 +102,12 @@ const EventDetailsPage = async({params}: {params: Promise<{ slug: string } >}) =
                 <p className="text-sm">Be the first to book a spot for this event!</p>
               )}
 
-              <BookEvent eventId={event.id} slug={event.slug} />
+              <BookEvent eventId={event._id} slug={event.slug} />
             </div>
           </aside>
       </div>
 
-      <div className="flex w-full flex-col gap-4 pt-20">
+      <div className="flex flex-col gap-4 pt-20 items-start w-full">
         <h2>Similar Events</h2>
         <div className="event">
           {similarEvents.length > 0 && similarEvents.map((similarEvents: IEvent) =>(

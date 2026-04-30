@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Navbar />
         
-        <div className="absolute inset-0 top-0 -z-[-1] min-h-screen" suppressHydrationWarning>
+        <div className="pointer-events-none absolute inset-0 top-0 -z-10 min-h-screen" suppressHydrationWarning>
           <LightRays
           raysOrigin="top-center-offset"
           raysColor="#5dfeca"
