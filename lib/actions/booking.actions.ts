@@ -3,7 +3,7 @@
 import Booking from "@/database/booking.model";
 import connectDB from "@/lib/mongodb";
 
-export const createBooking = async ({eventId, slug, email}: {eventId: string; slug: string; email: string}) => {
+export const createBooking = async ({eventId, slug: _slug, email}: {eventId: string; slug: string; email: string}) => {
     try {
         await connectDB();
 

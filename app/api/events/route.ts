@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
         try {
             event = Object.fromEntries(formData.entries());
-        } catch (e) {
+        } catch (_e) {
             return NextResponse.json({ error: 'Invalid form data' }, { status: 400 });
         }
 
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
                 tags = JSON.parse(tagsStr);
                 if (!Array.isArray(tags)) tags = [];
             }
-        } catch (e) {
-            console.warn('Failed to parse tags:', e);
+        } catch (_e) {
+            console.warn('Failed to parse tags:', _e);
             tags = [];
         }
 
@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
                 agenda = JSON.parse(agendaStr);
                 if (!Array.isArray(agenda)) agenda = [];
             }
-        } catch (e) {
-            console.warn('Failed to parse agenda:', e);
+        } catch (_e) {
+            console.warn('Failed to parse agenda:', _e);
             agenda = [];
         }
 
@@ -85,19 +85,19 @@ export async function POST(req: NextRequest) {
         });
 
         return NextResponse.json({ message: 'Event Created Successfully', event: createdEvent }, { status: 201 });
-    } catch (e) {
-        console.error('Event creation error:', e);
+    } catch (error) {
+        console.error('Event creation error:', error);
         
         // Handle Mongoose validation errors
-        if (e instanceof Error && 'errors' in e) {
-            const errors = (e as any).errors;
-            const errorMessages = Object.values(errors)
-                .map((err: any) => err.message)
+        if (error instanceof Error && 'errors' in (error as unknown as Record<string, unknown>)) {
+            const validationErrors = (error as unknown as { errors: Record<string, { message: string }> }).errors;
+            const errorMessages = Object.values(validationErrors)
+                .map((err) => err.message)
                 .join(', ');
             return NextResponse.json({ message: 'Event Creation Failed', error: errorMessages }, { status: 400 });
         }
         
-        return NextResponse.json({message: 'Event Creation Failed', error: e instanceof Error ? e.message : 'Unknown error'}, { status: 500 });
+        return NextResponse.json({message: 'Event Creation Failed', error: error instanceof Error ? error.message : 'Unknown error'}, { status: 500 });
     }
 }
 
@@ -108,7 +108,7 @@ export async function GET() {
         const events = await Event.find().sort({createdAt: -1});
 
         return NextResponse.json({message: 'Events fetched successfully', events}, {status: 200});
-    } catch (e) {
-        return NextResponse.json({message: 'Failed to fetch events', error: e instanceof Error ? e.message : 'Unknown error'}, {status: 500})
+    } catch (error) {
+        return NextResponse.json({message: 'Failed to fetch events', error: error instanceof Error ? error.message : 'Unknown error'}, {status: 500})
     }
 }
